@@ -1,0 +1,13 @@
+# app-ads.txt — SumStrides (com.sumstrides.sumstrides)
+# Подтверждает авторизованных продавцов рекламного инвентаря приложения.
+# Спецификация IAB Tech Lab: https://iabtechlab.com/ads-txt/
+#
+# Файл обязан лежать в КОРНЕ домена, который указан как «сайт разработчика»
+# в карточке приложения (Google Play / RuStore) — то есть
+# https://sumstrides.itpartner1c.ru/app-ads.txt
+
+# Google AdMob — сборка googleplay
+google.com, pub-1653273116272236, DIRECT, f08c47fec0942fa0
+
+# Яндекс (РСЯ) — сборка rustore. Строку добавить ПОСЛЕ регистрации в РСЯ:
+# точный формат (ID продавца) выдаст кабинет Яндекса.
