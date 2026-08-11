@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SumStrides — числовой кроссворд для Android</title>
+<meta name="description" content="Числовой кроссворд: расставляйте числа так, чтобы каждый пример сошёлся. Уровни генерируются заново, капибара-учёный растёт вместе с вами, коллекция из 28 великих математиков. Работает офлайн, без регистрации.">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<meta property="og:title" content="SumStrides — числовой кроссворд для Android">
+<meta property="og:description" content="Расставляйте числа так, чтобы каждый пример сошёлся. Работает офлайн, без регистрации.">
+<meta property="og:image" content="https://sumstrides.itpartner1c.ru/assets/icon.png">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#fdf6ec; --bg-alt:#f7ead9; --card:#fffdf9;
+    --ink:#2b2440; --ink-soft:#6d6480; --line:#eadbc7;
+    --peach:#e8875a; --teal:#3fb5ac; --violet:#8b5cf6;
+    --shadow:0 2px 4px rgba(43,36,64,.05),0 12px 28px rgba(43,36,64,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#191526; --bg-alt:#211c31; --card:#241f36;
+      --ink:#f4efe6; --ink-soft:#a49cb8; --line:#332c49;
+      --peach:#f0a077; --teal:#4ecdc4; --violet:#a78bfa;
+      --shadow:0 2px 4px rgba(0,0,0,.2),0 12px 28px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font:400 17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{line-height:1.2;letter-spacing:-.02em;margin:0}
+  a{color:inherit}
+
+  /* ── hero ── */
+  .hero{padding:72px 0 64px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:-40% 50% auto;width:900px;height:900px;
+    transform:translateX(-50%);border-radius:50%;
+    background:radial-gradient(circle,rgba(232,135,90,.16),transparent 62%);
+    pointer-events:none;
+  }
+  .hero>*{position:relative}
+  .hero img.icon{width:112px;height:112px;border-radius:26px;box-shadow:var(--shadow)}
+  .hero h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;margin:22px 0 12px}
+  .tagline{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--ink-soft);max-width:620px;margin:0 auto 26px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:30px}
+  .badge{
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:7px 15px;font-size:.88rem;font-weight:600;color:var(--ink-soft);
+  }
+  .cta{
+    display:inline-block;background:var(--peach);color:#fff;text-decoration:none;
+    font-weight:700;font-size:1.05rem;padding:15px 36px;border-radius:16px;
+    box-shadow:0 6px 18px rgba(232,135,90,.35);transition:transform .15s,box-shadow .15s;
+  }
+  .cta:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(232,135,90,.42)}
+  .cta-note{display:block;margin-top:12px;font-size:.9rem;color:var(--ink-soft)}
+
+  /* ── sections ── */
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  section.tint{background:var(--bg-alt)}
+  h2{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:800;margin-bottom:14px}
+  .lead{color:var(--ink-soft);max-width:640px;margin-bottom:36px}
+
+  /* ── mechanic ── */
+  .split{display:grid;grid-template-columns:1fr 300px;gap:52px;align-items:center}
+  .split img{width:100%;border-radius:22px;box-shadow:var(--shadow);display:block}
+  .steps{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:18px}
+  .steps li{display:flex;gap:14px;align-items:flex-start}
+  .steps .n{
+    flex:0 0 30px;height:30px;border-radius:10px;background:var(--teal);color:#fff;
+    display:grid;place-items:center;font-weight:800;font-size:.9rem;
+  }
+
+  /* ── features ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:20px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:26px;box-shadow:var(--shadow);
+  }
+  .card .ic{font-size:1.7rem;line-height:1;margin-bottom:12px;display:block}
+  .card h3{font-size:1.13rem;font-weight:700;margin-bottom:8px}
+  .card p{margin:0;color:var(--ink-soft);font-size:.97rem}
+
+  /* ── shots ── */
+  .shots{display:flex;gap:18px;overflow-x:auto;padding:6px 0 18px;scroll-snap-type:x mandatory}
+  .shots figure{margin:0;flex:0 0 236px;scroll-snap-align:center}
+  .shots img{width:100%;border-radius:20px;box-shadow:var(--shadow);display:block}
+  .shots figcaption{margin-top:11px;font-size:.9rem;color:var(--ink-soft);text-align:center}
+
+  /* ── honesty ── */
+  .honest{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .honest div{
+    background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);
+    border-radius:14px;padding:20px 22px;
+  }
+  .honest strong{display:block;margin-bottom:6px}
+  .honest p{margin:0;color:var(--ink-soft);font-size:.95rem}
+
+  footer{padding:48px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.94rem}
+  footer a{color:var(--peach);text-decoration:none;font-weight:600}
+  footer a:hover{text-decoration:underline}
+  .flinks{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:18px}
+
+  @media (max-width:760px){
+    .split{grid-template-columns:1fr;gap:34px}
+    .split .art{order:-1;max-width:260px;margin:0 auto}
+    section{padding:52px 0}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="icon" src="assets/icon.png" alt="Иконка SumStrides">
+    <h1>SumStrides</h1>
+    <p class="tagline">Числовой кроссворд, где каждый пример должен сойтись. Считайте в уме, растите капибару-учёного и собирайте великих математиков.</p>
+    <div class="badges">
+      <span class="badge">Работает офлайн</span>
+      <span class="badge">Без регистрации</span>
+      <span class="badge">Русский и English</span>
+      <span class="badge">Android 7.0+</span>
+    </div>
+    <a class="cta" href="#about">Что внутри</a>
+    <small class="cta-note">Скоро в RuStore</small>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <h2>Кроссворд, только из чисел</h2>
+        <p class="lead">Перед вами сетка пересекающихся примеров с пустыми клетками. Внизу — числа, которые нужно расставить так, чтобы сошлось каждое равенство: и по горизонтали, и по вертикали одновременно.</p>
+        <ul class="steps">
+          <li><span class="n">1</span><span>Берёте число из палитры — оно «примагничивается» к подходящей клетке.</span></li>
+          <li><span class="n">2</span><span>Проверяете, что пример сходится не только по строке, но и по столбцу.</span></li>
+          <li><span class="n">3</span><span>Заполняете сетку целиком — и получаете монеты, опыт и иногда сундук.</span></li>
+        </ul>
+      </div>
+      <div class="art"><img src="assets/02_game.jpg" alt="Игровой экран: сетка пересекающихся примеров и палитра чисел"></div>
+    </div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <h2>Помимо примеров</h2>
+    <p class="lead">Арифметика — ядро игры, но возвращаться в неё хочется из-за того, что растёт вокруг.</p>
+    <div class="grid">
+      <div class="card">
+        <span class="ic">🎲</span>
+        <h3>Уровни не повторяются</h3>
+        <p>Каждая сетка собирается генератором заново. Заученных решений не существует — только счёт в уме.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🎓</span>
+        <h3>Путь капибары</h3>
+        <p>Ваш спутник проходит семь стадий — от Малыша до Кибер-Мудреца. Комната вокруг него меняется вместе с уровнем.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🃏</span>
+        <h3>28 математиков</h3>
+        <p>Пифагор, Гипатия, Эйлер, Ковалевская. Собранная карточка даёт постоянный бонус, полный набор — ещё один.</p>
+      </div>
+      <div class="card">
+        <span class="ic">🔥</span>
+        <h3>Ежедневные цели и серии</h3>
+        <p>Три кольца на день и стрик, который можно уберечь заморозкой, если день выпал из графика.</p>
+      </div>
+      <div class="card">
+        <span class="ic">⚙️</span>
+        <h3>Улучшения и научный грант</h3>
+        <p>Монеты вкладываются в апгрейды, а часть дохода копится, пока вы не в игре.</p>
+      </div>
+      <div class="card">
+        <span class="ic">📈</span>
+        <h3>Профиль навыков</h3>
+        <p>Отдельная статистика по сложению, вычитанию, умножению, делению, логике и скорости.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Как это выглядит</h2>
+    <p class="lead">Скриншоты из настоящей сборки — без приукрашивания.</p>
+    <div class="shots">
+      <figure><img src="assets/01_dashboard.jpg" alt="Главный экран с капибарой"><figcaption>Главный экран</figcaption></figure>
+      <figure><img src="assets/02_game.jpg" alt="Игровой процесс"><figcaption>Игра</figcaption></figure>
+      <figure><img src="assets/03_collection.jpg" alt="Коллекция карточек математиков"><figcaption>Коллекция</figcaption></figure>
+      <figure><img src="assets/04_achievements.jpg" alt="Экран достижений"><figcaption>Достижения</figcaption></figure>
+      <figure><img src="assets/05_stats.jpg" alt="Статистика и профиль навыков"><figcaption>Статистика</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <h2>Честно об условиях</h2>
+    <p class="lead">То, что обычно выясняется только после установки.</p>
+    <div class="honest">
+      <div>
+        <strong>Реклама — только по желанию</strong>
+        <p>Принудительных роликов нет. Видео запускается, лишь когда вы сами решили удвоить награду или взять подсказку.</p>
+      </div>
+      <div>
+        <strong>Внутренних покупок нет</strong>
+        <p>Ничего не продаётся за реальные деньги. Всё в игре открывается через игру.</p>
+      </div>
+      <div>
+        <strong>Интернет не нужен</strong>
+        <p>Уровни считаются на устройстве. Сеть нужна только для таблицы лидеров и необязательного видео.</p>
+      </div>
+      <div>
+        <strong>Аккаунт не нужен</strong>
+        <p>Ни регистрации, ни почты, ни телефона. Прогресс хранится на устройстве.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="flinks">
+      <a href="privacy/">Политика конфиденциальности</a>
+      <a href="mailto:sumstrides@gmail.com">sumstrides@gmail.com</a>
+    </div>
+    <p style="margin:0">SumStrides — числовой кроссворд для Android. Разработка: ИП Поздняков А. С.</p>
+  </div>
+</footer>
+
+</body>
+</html>
